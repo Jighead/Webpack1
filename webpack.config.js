@@ -1,18 +1,39 @@
 var path = require('path');
+var webpack = require('webpack');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
-var CleanWebpackPlugin = require('clean-webpack-plugin'); 
 
-var extractPlugin = new ExtractTextPlugin({
-   filename: 'main.css'
-});
+// dev config for styles
+var cssDev = ['style-loader', 'css-loader', 'sass-loader']
+// production config for style (extract to seperate file(s))
+var cssProd = ExtractTextPlugin.extract({
+    fallback: 'style-loader',
+    loader: ['css-loader', 'sass-loader'],
+    publicPath: '/dist'
+  })
+// dev or prod build  flag
+var isProd = process.env.NODE_ENV === 'production'
+//set which css config to use
+var cssConfig = isProd ? cssProd : cssDev
+
+var minify = isProd ? true : false
 
 module.exports = {
     entry: './src/js/app.js',
     output: {
         path: path.resolve(__dirname, 'dist'),
         filename: 'bundle.js',
-        // publicPath: '/dist'
+    },
+    devtool: 'source-map',
+    stats: 'errors-only',
+    
+    devServer: {
+        port: 3000,
+        inline: true,
+        open: true,
+        stats: "errors-only",
+        compress: true,
+        contentBase: path.join(__dirname, "dist")
     },
     module: {
         rules: [
@@ -29,15 +50,13 @@ module.exports = {
             },
             {
                 test: /\.scss$/,
-                use: extractPlugin.extract({
-                    use: ['css-loader', 'sass-loader']
-                })
+                use: cssConfig
             },
             {
                 test: /\.html$/,
                 use: ['html-loader']
             },
-            { // used for multiple pages. They can be imported in app.js. In this example project it's second.html and third.html
+            { // used for multiple html pages. They can be imported in app.js. In this example project it's second.html and third.html
                 test: /\.html$/,
                 use: [
                     {
@@ -65,10 +84,14 @@ module.exports = {
         ]
     },
     plugins: [
-        extractPlugin,
-        new HtmlWebpackPlugin({
-            template: 'src/index.html'
+        new ExtractTextPlugin({
+            filename: 'main.css',
+            disable: !isProd
         }),
-        new CleanWebpackPlugin(['dist']) // removes dist folder after build when using the webpack dev server. Run build:prod to see the dist folder.
+        new HtmlWebpackPlugin({
+            template: 'src/index.html',
+            minify : { collapseWhitespace: minify }
+        })
+        //new CleanWebpackPlugin(['dist']) // removes dist folder after build when using the webpack dev server. Run build:prod to see the dist folder.
     ]
 };
