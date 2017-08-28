@@ -2,14 +2,14 @@ var path = require('path');
 var webpack = require('webpack');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
-
+var prodfolder = "_prod-dist";
 // dev config for styles
 var cssDev = ['style-loader', 'css-loader', 'sass-loader']
 // production config for style (extract to seperate file(s))
 var cssProd = ExtractTextPlugin.extract({
     fallback: 'style-loader',
     loader: ['css-loader', 'sass-loader'],
-    publicPath: '/dist'
+    publicPath: '/' + prodfolder
   })
 // dev or prod build  flag
 var isProd = process.env.NODE_ENV === 'production'
@@ -21,19 +21,18 @@ var minify = isProd ? true : false
 module.exports = {
     entry: './src/js/app.js',
     output: {
-        path: path.resolve(__dirname, 'dist'),
-        filename: 'bundle.js',
+        path: path.resolve(__dirname, prodfolder),
+        filename: 'js/bundle.js',
     },
     devtool: 'source-map',
     stats: 'errors-only',
-    
     devServer: {
         port: 3000,
         inline: true,
         open: true,
         stats: "errors-only",
         compress: true,
-        contentBase: path.join(__dirname, "dist")
+        contentBase: path.join(__dirname, prodfolder)
     },
     module: {
         rules: [
@@ -85,7 +84,7 @@ module.exports = {
     },
     plugins: [
         new ExtractTextPlugin({
-            filename: 'main.css',
+            filename: 'css/main.css',
             disable: !isProd
         }),
         new HtmlWebpackPlugin({
