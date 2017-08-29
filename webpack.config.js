@@ -1,8 +1,13 @@
-var path = require('path');
-var webpack = require('webpack');
-var ExtractTextPlugin = require('extract-text-webpack-plugin');
-var HtmlWebpackPlugin = require('html-webpack-plugin');
-var prodfolder = "_prod-dist";
+var path = require('path'),
+    webpack = require('webpack'),
+    ExtractTextPlugin = require('extract-text-webpack-plugin'),
+    HtmlWebpackPlugin = require('html-webpack-plugin'),
+    //CommonChunksPlugin = require('webpack/lib/optimize/CommonsChunkPlugin'),
+    prodfolder = "_prod-dist",
+    bootstrapEntryPoints = require('./webpack.bootstrap.config');
+// const VENDORS = [
+//     "bootstrap", "jquery"
+// ];
 // dev config for styles
 var cssDev = ['style-loader', 'css-loader', 'sass-loader']
 // production config for style (extract to seperate file(s))
@@ -10,19 +15,25 @@ var cssProd = ExtractTextPlugin.extract({
     fallback: 'style-loader',
     loader: ['css-loader', 'sass-loader'],
     publicPath: '/' + prodfolder
-  })
+})
+
 // dev or prod build  flag
 var isProd = process.env.NODE_ENV === 'production'
 //set which css config to use
-var cssConfig = isProd ? cssProd : cssDev
-
-var minify = isProd ? true : false
+var cssConfig = isProd ? cssProd : cssDev;
+var bootstrapConfig = isProd ? bootstrapEntryPoints.prod : bootstrapEntryPoints.dev;
+var minify = isProd ? true : false;
 
 module.exports = {
-    entry: './src/js/app.js',
+    entry: {
+        common: ["jquery"],
+        app: './src/js/app.js',
+        bootstrap: bootstrapConfig,
+        //vendor: VENDORS
+    },
     output: {
         path: path.resolve(__dirname, prodfolder),
-        filename: 'js/bundle.js',
+        filename: 'js/[name].bundle.js',
     },
     devtool: 'source-map',
     stats: 'errors-only',
@@ -35,17 +46,14 @@ module.exports = {
         contentBase: path.join(__dirname, prodfolder)
     },
     module: {
-        rules: [
-            {
+        rules: [{
                 test: /\.js$/,
-                use: [
-                    {
-                        loader: 'babel-loader',
-                        options: {
-                            presets: ['es2015']
-                        }
+                use: [{
+                    loader: 'babel-loader',
+                    options: {
+                        presets: ['es2015']
                     }
-                ]
+                }]
             },
             {
                 test: /\.scss$/,
@@ -55,42 +63,53 @@ module.exports = {
                 test: /\.html$/,
                 use: ['html-loader']
             },
-            { // used for multiple html pages. They can be imported in app.js. In this example project it's second.html and third.html
+            { // used for multiple html pages. They can be imported in app.js. In this example project it's about.htm
                 test: /\.html$/,
-                use: [
-                    {
-                        loader: 'file-loader',
-                        options: {
-                            name: '[name].[ext]',
-                        }
+                use: [{
+                    loader: 'file-loader',
+                    options: {
+                        name: '[name].[ext]',
                     }
-                ],
+                }],
                 exclude: path.resolve(__dirname, 'src/index.html')
             },
             {
                 test: /\.(jpg|png|svg|gif|ico)$/,
-                use: [
-                    {
-                        loader: 'file-loader',
-                        options: {
-                            name: '[name].[ext]',
-                            outputPath: 'img/',
-                            publicPath: 'img/'
-                        }
+                use: [{
+                    loader: 'file-loader',
+                    options: {
+                        name: '[name].[ext]',
+                        outputPath: 'img/',
+                        publicPath: 'img/'
                     }
-                ]
+                }]
+            },
+            // needed for twitter bootstrap icons
+            {
+                test: /\.(woff2?|svg)$/,
+                loader: 'url-loader?limit=10000&name=fonts/[name].[ext]'
+            },
+            {
+                test: /\.(ttf|eot)$/,
+                loader: 'file-loader?name=fonts/[name].[ext]'
+            },
+            {
+                test: /bootstrap-sass[\/\\]assets[\/\\]javascripts[\/\\]/,
+                use: 'imports-loader?jQuery=jquery,$=jquery'
             }
         ]
     },
     plugins: [
         new ExtractTextPlugin({
-            filename: 'css/main.css',
+            filename: 'css/[name].css',
             disable: !isProd
         }),
         new HtmlWebpackPlugin({
             template: 'src/index.html',
-            minify : { collapseWhitespace: minify }
+            hash: true,
+            minify: {
+                collapseWhitespace: minify
+            }
         })
-        //new CleanWebpackPlugin(['dist']) // removes dist folder after build when using the webpack dev server. Run build:prod to see the dist folder.
     ]
 };

@@ -1,4 +1,10 @@
 @import "colors";
+.border1 {
+  border: 1px solid #666;
+}
+.border2 {
+  border:2px solid #666;
+}
 
 #randomInt {
   background-color: $main;
