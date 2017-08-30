@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "webpack-dev-server",
+    "dev": "webpack-dev-server --hot --inline",
     "prod": "set NODE_ENV=production&&npm run clean&&webpack -p",
     "clean": "rimraf ./_prod-dist/*"
   },

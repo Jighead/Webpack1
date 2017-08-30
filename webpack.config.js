@@ -26,8 +26,9 @@ var minify = isProd ? true : false;
 
 module.exports = {
     entry: {
-        common: ["jquery"],
+       // common: ["jquery"],
         app: './src/js/app.js',
+        about: './src/js/about.js',
         bootstrap: bootstrapConfig,
         //vendor: VENDORS
     },
@@ -39,11 +40,15 @@ module.exports = {
     stats: 'errors-only',
     devServer: {
         port: 3000,
-        inline: true,
         open: true,
-        stats: "errors-only",
+        stats: {
+			colors: true,
+			reasons: true,
+			chunks: false,
+			modules: false
+		},
         compress: true,
-        contentBase: path.join(__dirname, prodfolder)
+        //contentBase: path.join(__dirname, prodfolder)
     },
     module: {
         rules: [{
@@ -63,16 +68,16 @@ module.exports = {
                 test: /\.html$/,
                 use: ['html-loader']
             },
-            { // used for multiple html pages. They can be imported in app.js. In this example project it's about.htm
-                test: /\.html$/,
-                use: [{
-                    loader: 'file-loader',
-                    options: {
-                        name: '[name].[ext]',
-                    }
-                }],
-                exclude: path.resolve(__dirname, 'src/index.html')
-            },
+            // { // used for multiple html pages. They can be imported in app.js. In this example project it's about.htm
+            //     test: /\.html$/,
+            //     use: [{
+            //         loader: 'file-loader',
+            //         options: {
+            //             name: '[name].[ext]',
+            //         }
+            //     }],
+            //     exclude: path.resolve(__dirname, 'src/index.html')
+            // },
             {
                 test: /\.(jpg|png|svg|gif|ico)$/,
                 use: [{
@@ -100,16 +105,33 @@ module.exports = {
         ]
     },
     plugins: [
+        // new webpack.ProvidePlugin({
+        //     '$': 'jquery',
+        //     'jQuery': 'jquery'
+        //   }),
         new ExtractTextPlugin({
             filename: 'css/[name].css',
             disable: !isProd
         }),
         new HtmlWebpackPlugin({
+            title: "Webpack 2",
+            filename: 'index.html',
             template: 'src/index.html',
+            excludeChunks: ['about'], // we need to exclude the other pages.
             hash: true,
-            minify: {
-                collapseWhitespace: minify
-            }
+            // minify: {
+            //     collapseWhitespace: minify
+            // }
+        }),
+        new HtmlWebpackPlugin({
+            title: "About Us",
+            filename: 'about.html',
+            template: 'src/about.html',
+            chunks: ['bootstrap','about'], // we need to include twitter bootsrap here
+            hash: true,
+            // minify: {
+            //     collapseWhitespace: minify
+            // }
         })
     ]
 };

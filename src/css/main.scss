@@ -1,4 +1,20 @@
 @import "colors";
+
+body {
+  margin-top:80px;
+  background: #ccc;
+}
+
+.navbar-default {
+  background-color: $navbar;
+}
+.navbar-default .navbar-nav > li > a {
+  color: $navbarlinks;
+}
+
+.navbar-default .navbar-nav > li > a:hover, .navbar-default .navbar-nav > li > a:focus {
+  color: red;
+}
 .border1 {
   border: 1px solid #666;
 }
@@ -19,3 +35,4 @@
   color: white;
   padding: 5px;
 }
+
