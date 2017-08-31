@@ -1,10 +1,9 @@
 @import "colors";
-
-body {
-  margin-top:80px;
-  background: #ccc;
-}
-
+@import "bootstrap/overrides";
+ body {
+   background-color: #ddd;
+   margin-top:80px;
+ }
 .navbar-default {
   background-color: $navbar;
 }

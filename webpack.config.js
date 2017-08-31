@@ -1,11 +1,12 @@
-var path = require('path'),
+const path = require('path'),
     webpack = require('webpack'),
     ExtractTextPlugin = require('extract-text-webpack-plugin'),
     HtmlWebpackPlugin = require('html-webpack-plugin'),
     //CommonChunksPlugin = require('webpack/lib/optimize/CommonsChunkPlugin'),
     prodfolder = "_prod-dist",
-    bootstrapEntryPoints = require('./webpack.bootstrap.config');
-    const BrowserSyncPlugin = require('browser-sync-webpack-plugin');
+    bootstrapEntryPoints = require('./webpack.bootstrap.config'),
+    BrowserSyncPlugin = require('browser-sync-webpack-plugin'),
+    CopyWebpackPlugin = require('copy-webpack-plugin');
 // const VENDORS = [
 //     "bootstrap", "jquery"
 // ];
@@ -99,6 +100,7 @@ module.exports = {
                 test: /\.(ttf|eot)$/,
                 loader: 'file-loader?name=fonts/[name].[ext]'
             },
+
             {
                 test: /bootstrap-sass[\/\\]assets[\/\\]javascripts[\/\\]/,
                 use: 'imports-loader?jQuery=jquery,$=jquery'
@@ -132,6 +134,10 @@ module.exports = {
             filename: 'css/[name].css',
             disable: !isProd
         }),
+        // lets copy our content files too.
+        new CopyWebpackPlugin([
+            { from: './src/content/', to:'content/[name].[ext]'}
+        ]),
         new HtmlWebpackPlugin({
             title: "Webpack 2",
             filename: 'index.html',

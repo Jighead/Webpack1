@@ -13,7 +13,7 @@ export class Navbar {
                       <span class="icon-bar"></span>
                       <span class="icon-bar"></span>
                     </button>
-                <a class="navbar-brand" href="#">Starter Project</a>
+                <a class="navbar-brand" href="#">Webpack 2 Starter Project</a>
             </div>
             <div id="navbar" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
@@ -34,8 +34,8 @@ export class Navbar {
                     </li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
-                    <li><a href="../navbar/">Default</a></li>
-                    <li><a href="../navbar-static-top/">Static top</a></li>
+                    <li><a href="#">Default</a></li>
+                    <li><a href="#">Static top</a></li>
                     <li class="active"><a href="./">Fixed top <span class="sr-only">(current)</span></a></li>
                 </ul>
             </div>
